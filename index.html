@@ -1,16 +1,12 @@
 
 <!DOCTYPE html>
 <html lang="bn">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080812">
-
-<title>My Video Reels</title>
+<title>Reels Video Player</title>
 
 <style>
-
 * {
     margin: 0;
     padding: 0;
@@ -18,454 +14,393 @@
 }
 
 body {
-    background: #080812;
+    background: #080808;
     color: white;
     font-family: Arial, sans-serif;
 }
 
-/* HEADER */
-
 header {
+    height: 55px;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: #101020;
-    padding: 17px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    border-bottom: 1px solid #292940;
+    border-bottom: 1px solid #252525;
 }
 
-/* SOUND INFO */
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+    color: white;
+}
 
-.sound-info {
-    text-align: center;
-    padding: 15px 10px 8px;
-    color: #bbb;
+.logo span {
+    color: #ff3040;
+}
+
+.header-right {
+    color: #aaa;
     font-size: 13px;
 }
-
-#soundBtn {
-    display: block;
-    margin: 8px auto 20px;
-    padding: 13px 25px;
-    border: none;
-    border-radius: 30px;
-    background: linear-gradient(135deg, #7c4dff, #a855f7);
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: .3s;
-}
-
-#soundBtn:hover {
-    transform: scale(1.05);
-}
-
-/* VIDEO FEED */
 
 .feed {
     width: 100%;
-    max-width: 460px;
+    max-width: 480px;
     margin: auto;
-    padding: 10px;
+    padding: 12px 10px;
 }
 
-/* REELS */
-
-.reel {
+.video-card {
+    width: 100%;
+    height: min(78vh, 720px);
+    min-height: 400px;
+    background: #151515;
     position: relative;
-    width: 100%;
-    aspect-ratio: 9 / 16;
-    max-height: 80vh;
-    margin-bottom: 30px;
-    background: #151525;
-    border-radius: 16px;
+    margin-bottom: 20px;
+    border-radius: 13px;
     overflow: hidden;
-    box-shadow: 0 5px 25px rgba(0,0,0,.35);
+    border: 1px solid #292929;
 }
 
-.reel .player {
+.player {
     width: 100%;
     height: 100%;
+    background: black;
 }
 
-.reel iframe {
+.player iframe {
     width: 100%;
     height: 100%;
-    display: block;
-    border: none;
+    border: 0;
 }
 
-/* VIDEO LABEL */
-
-.reel-label {
+.video-info {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
-    background: rgba(0,0,0,.7);
-    padding: 7px 13px;
-    border-radius: 20px;
-    font-size: 12px;
+    left: 14px;
+    bottom: 18px;
+    z-index: 5;
     pointer-events: none;
+    text-shadow: 0 1px 5px black;
 }
 
-/* FOOTER */
+.video-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
 
-footer {
+.video-desc {
+    font-size: 12px;
+    color: #ddd;
+}
+
+.side-buttons {
+    position: absolute;
+    right: 12px;
+    bottom: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 10;
+}
+
+.action-btn {
+    border: none;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    font-size: 19px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-btn:hover {
+    background: #ff3040;
+}
+
+.sound-label {
+    font-size: 10px;
     text-align: center;
-    padding: 25px;
-    color: #777;
-    font-size: 13px;
+    color: white;
 }
 
-/* MOBILE */
+.fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    z-index: 9999;
+    border-radius: 0;
+    margin: 0;
+}
 
-@media(max-width: 500px) {
+.fullscreen .player {
+    width: 100%;
+    height: 100%;
+}
 
+@media(max-width:600px) {
     header {
-        font-size: 19px;
+        height: 48px;
     }
 
     .feed {
-        padding: 8px;
+        padding: 5px;
     }
 
-    .reel {
-        max-height: 75vh;
-        border-radius: 12px;
+    .video-card {
+        height: 76vh;
+        min-height: 350px;
+        border-radius: 8px;
+        margin-bottom: 12px;
     }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-
 <header>
-    🎬 My Video Reels
+    <div class="logo">MY<span> REELS</span></div>
+    <div class="header-right">Video Collection</div>
 </header>
-
-<div class="sound-info">
-    প্রথমবার সাউন্ড চালু করতে নিচের বাটনে ক্লিক করো।
-</div>
-
-<button id="soundBtn">
-    🔊 Enable Sound
-</button>
-
-
-<!-- VIDEO LIST -->
 
 <div class="feed" id="feed">
 
-    <!-- VIDEO 01 -->
+    <!-- VIDEO 1 -->
+    <div class="video-card">
+        <div class="player" data-video="B6btl5hsTpc"></div>
 
-    <div class="reel" data-video="B6btl5hsTpc">
-
-        <div class="reel-label">
-            Video 01
+        <div class="video-info">
+            <div class="video-title">Video Number 01</div>
+            <div class="video-desc">Enjoy this video ❤️</div>
         </div>
 
-        <div class="player"></div>
-
+        <div class="side-buttons">
+            <button class="action-btn sound-btn" onclick="toggleSound(this)">🔇</button>
+            <div class="sound-label">Sound</div>
+            <button class="action-btn" onclick="toggleFullscreen(this)">⛶</button>
+            <div class="sound-label">Full Screen</div>
+        </div>
     </div>
 
+    <!-- VIDEO 2 -->
+    <div class="video-card">
+        <div class="player" data-video="6FzgXC5b6Gw"></div>
 
-    <!-- VIDEO 02 -->
-
-    <div class="reel" data-video="">
-
-        <div class="reel-label">
-            Video 02
+        <div class="video-info">
+            <div class="video-title">Video Number 02</div>
+            <div class="video-desc">Enjoy this video ❤️</div>
         </div>
 
-        <div class="player"></div>
-
+        <div class="side-buttons">
+            <button class="action-btn sound-btn" onclick="toggleSound(this)">🔇</button>
+            <div class="sound-label">Sound</div>
+            <button class="action-btn" onclick="toggleFullscreen(this)">⛶</button>
+            <div class="sound-label">Full Screen</div>
+        </div>
     </div>
 
+    <!-- VIDEO 3 -->
+    <div class="video-card">
+        <div class="player" data-video="ysz5S6PUM-U"></div>
 
-    <!-- VIDEO 03 -->
-
-    <div class="reel" data-video="">
-
-        <div class="reel-label">
-            Video 03
+        <div class="video-info">
+            <div class="video-title">Video Number 03</div>
+            <div class="video-desc">Enjoy this video ❤️</div>
         </div>
 
-        <div class="player"></div>
-
+        <div class="side-buttons">
+            <button class="action-btn sound-btn" onclick="toggleSound(this)">🔇</button>
+            <div class="sound-label">Sound</div>
+            <button class="action-btn" onclick="toggleFullscreen(this)">⛶</button>
+            <div class="sound-label">Full Screen</div>
+        </div>
     </div>
-
 
 </div>
 
-
-<!-- FOOTER -->
-
-<footer>
-    © 2026 My Video Reels
-</footer>
-
-
-<!-- YOUTUBE API -->
-
 <script src="https://www.youtube.com/iframe_api"></script>
 
-
 <script>
-
-/* =================================
-   SETTINGS
-================================= */
-
 let players = [];
-
+let activePlayer = null;
 let soundEnabled = false;
 
-let activePlayer = null;
-
-let visibleReels = new Set();
-
-const reels = document.querySelectorAll(".reel");
-
-const soundBtn = document.getElementById("soundBtn");
-
-
-/* =================================
-   CREATE YOUTUBE PLAYERS
-================================= */
-
+// YouTube API Ready
 function onYouTubeIframeAPIReady() {
 
-    reels.forEach((reel, index) => {
+    const containers = document.querySelectorAll('.player');
 
-        const videoId = reel.dataset.video;
+    containers.forEach((container, index) => {
 
-        if (!videoId) return;
+        const videoId = container.dataset.video;
 
-        players[index] = new YT.Player(
-            reel.querySelector(".player"),
-            {
+        const player = new YT.Player(container, {
+            videoId: videoId,
 
-                width: "100%",
-                height: "100%",
+            playerVars: {
+                autoplay: 0,
+                controls: 1,
+                mute: 1,
+                playsinline: 1,
+                rel: 0,
+                enablejsapi: 1
+            },
 
-                videoId: videoId,
-
-                playerVars: {
-
-                    autoplay: 0,
-                    controls: 1,
-                    playsinline: 1,
-                    rel: 0,
-                    enablejsapi: 1
-
-                },
-
-                events: {
-
-                    onReady: function(event) {
-
-                        const iframe = event.target.getIframe();
-
-                        iframe.style.width = "100%";
-                        iframe.style.height = "100%";
-
-                        iframe.setAttribute(
-                            "allow",
-                            "autoplay; encrypted-media; picture-in-picture"
-                        );
-
-                        event.target.mute();
-
-                        if (visibleReels.has(index)) {
-                            playReel(index);
-                        }
-
-                    },
-
-                    onStateChange: function(event) {
-
-                        if (
-                            event.data ===
-                            YT.PlayerState.PLAYING
-                        ) {
-
-                            players.forEach((player, i) => {
-
-                                if (
-                                    player &&
-                                    player !== event.target
-                                ) {
-
-                                    player.pauseVideo();
-
-                                }
-
-                            });
-
-                        }
-
-                    }
-
+            events: {
+                onReady: function(event) {
+                    event.target.mute();
+                    event.target.setVolume(100);
                 }
-
             }
+        });
 
-        );
+        players.push({
+            player: player,
+            card: container.closest('.video-card')
+        });
 
     });
 
+    startAutoPlay();
 }
 
 
-/* =================================
-   PLAY VIDEO
-================================= */
+// Scroll করলে ভিডিও চালু/বন্ধ
+function startAutoPlay() {
 
-function playReel(index) {
-
-    const player = players[index];
-
-    if (!player || !player.playVideo) return;
-
-    if (activePlayer && activePlayer !== player) {
-
-        activePlayer.pauseVideo();
-
-    }
-
-    activePlayer = player;
-
-    if (soundEnabled) {
-
-        player.unMute();
-
-        player.setVolume(100);
-
-    } else {
-
-        player.mute();
-
-    }
-
-    player.playVideo();
-
-}
-
-
-/* =================================
-   VIDEO VISIBILITY DETECTION
-================================= */
-
-const observer = new IntersectionObserver(
-
-    (entries) => {
+    const observer = new IntersectionObserver((entries) => {
 
         entries.forEach(entry => {
 
-            const index = [...reels].indexOf(entry.target);
+            const item = players.find(
+                p => p.card === entry.target
+            );
 
-            if (entry.isIntersecting) {
+            if (!item) return;
 
-                visibleReels.add(index);
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
 
-                playReel(index);
+                // অন্য ভিডিও বন্ধ
+                players.forEach(p => {
+                    if (p !== item) {
+                        try {
+                            p.player.pauseVideo();
+                        } catch(e) {}
+                    }
+                });
+
+                activePlayer = item.player;
+
+                try {
+                    if (soundEnabled) {
+                        item.player.unMute();
+                        item.player.setVolume(100);
+                    } else {
+                        item.player.mute();
+                    }
+
+                    item.player.playVideo();
+
+                } catch(e) {}
 
             } else {
 
-                visibleReels.delete(index);
-
-                if (players[index]) {
-
-                    players[index].pauseVideo();
-
-                }
+                try {
+                    item.player.pauseVideo();
+                } catch(e) {}
 
             }
 
         });
 
-    },
+    }, {
+        threshold: [0, 0.65, 0.85]
+    });
 
-    {
-
-        threshold: 0.65
-
-    }
-
-);
-
-
-/* =================================
-   OBSERVE ALL VIDEOS
-================================= */
-
-reels.forEach(reel => {
-
-    observer.observe(reel);
-
-});
+    document.querySelectorAll('.video-card').forEach(card => {
+        observer.observe(card);
+    });
+}
 
 
-/* =================================
-   SOUND ENABLE BUTTON
-================================= */
+// Sound ON/OFF
+function toggleSound(button) {
 
-soundBtn.addEventListener("click", function() {
+    const card = button.closest('.video-card');
 
-    soundEnabled = true;
+    const item = players.find(p => p.card === card);
 
-    soundBtn.innerHTML = "🔊 Sound Enabled";
+    if (!item) return;
 
-    if (activePlayer) {
+    soundEnabled = !soundEnabled;
 
-        activePlayer.unMute();
+    // সব ভিডিওর সাউন্ড নিয়ন্ত্রণ
+    players.forEach(p => {
 
-        activePlayer.setVolume(100);
-
-        activePlayer.playVideo();
-
-    }
-
-});
-
-
-/* =================================
-   PAUSE WHEN TAB IS HIDDEN
-================================= */
-
-document.addEventListener(
-    "visibilitychange",
-    function() {
-
-        if (document.hidden) {
-
-            if (activePlayer) {
-
-                activePlayer.pauseVideo();
-
-            }
-
+        if (soundEnabled) {
+            p.player.mute();
         } else {
+            p.player.mute();
+        }
 
-            visibleReels.forEach(index => {
+    });
 
-                playReel(index);
+    if (soundEnabled) {
 
-            });
+        item.player.unMute();
+        item.player.setVolume(100);
+        item.player.playVideo();
 
+        button.innerHTML = "🔊";
+
+    } else {
+
+        item.player.mute();
+        button.innerHTML = "🔇";
+
+    }
+
+    // অন্য Sound Button আপডেট
+    document.querySelectorAll('.sound-btn').forEach(btn => {
+        btn.innerHTML = soundEnabled ? "🔊" : "🔇";
+    });
+
+}
+
+
+// Fullscreen
+function toggleFullscreen(button) {
+
+    const card = button.closest('.video-card');
+
+    if (!document.fullscreenElement) {
+
+        if (card.requestFullscreen) {
+            card.requestFullscreen();
+        } else if (card.webkitRequestFullscreen) {
+            card.webkitRequestFullscreen();
+        }
+
+    } else {
+
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
         }
 
     }
-);
+}
 
 </script>
 
