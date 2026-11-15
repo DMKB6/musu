@@ -1,13 +1,16 @@
 
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080812">
+
 <title>My Video Reels</title>
 
 <style>
+
 * {
     margin: 0;
     padding: 0;
@@ -20,37 +23,48 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/* HEADER */
+
 header {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 100;
     background: #101020;
-    padding: 16px;
+    padding: 17px;
     text-align: center;
-    font-size: 21px;
+    font-size: 22px;
     font-weight: bold;
     border-bottom: 1px solid #292940;
 }
 
+/* SOUND INFO */
+
 .sound-info {
     text-align: center;
-    padding: 12px;
+    padding: 15px 10px 8px;
     color: #bbb;
     font-size: 13px;
 }
 
 #soundBtn {
     display: block;
-    margin: 5px auto 15px;
-    padding: 12px 24px;
+    margin: 8px auto 20px;
+    padding: 13px 25px;
     border: none;
     border-radius: 30px;
-    background: #7c4dff;
+    background: linear-gradient(135deg, #7c4dff, #a855f7);
     color: white;
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
+    transition: .3s;
 }
+
+#soundBtn:hover {
+    transform: scale(1.05);
+}
+
+/* VIDEO FEED */
 
 .feed {
     width: 100%;
@@ -59,197 +73,400 @@ header {
     padding: 10px;
 }
 
+/* REELS */
+
 .reel {
     position: relative;
     width: 100%;
     aspect-ratio: 9 / 16;
     max-height: 80vh;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     background: #151525;
     border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0,0,0,.35);
+}
+
+.reel .player {
+    width: 100%;
+    height: 100%;
 }
 
 .reel iframe {
     width: 100%;
     height: 100%;
+    display: block;
     border: none;
 }
+
+/* VIDEO LABEL */
 
 .reel-label {
     position: absolute;
     top: 12px;
     left: 12px;
     z-index: 2;
-    background: rgba(0,0,0,.65);
-    padding: 7px 12px;
+    background: rgba(0,0,0,.7);
+    padding: 7px 13px;
     border-radius: 20px;
     font-size: 12px;
     pointer-events: none;
 }
 
+/* FOOTER */
+
 footer {
     text-align: center;
     padding: 25px;
     color: #777;
+    font-size: 13px;
 }
+
+/* MOBILE */
+
+@media(max-width: 500px) {
+
+    header {
+        font-size: 19px;
+    }
+
+    .feed {
+        padding: 8px;
+    }
+
+    .reel {
+        max-height: 75vh;
+        border-radius: 12px;
+    }
+
+}
+
 </style>
 </head>
 
 <body>
 
-<header>🎬 My Video Reels</header>
+<!-- HEADER -->
+
+<header>
+    🎬 My Video Reels
+</header>
 
 <div class="sound-info">
     প্রথমবার সাউন্ড চালু করতে নিচের বাটনে ক্লিক করো।
 </div>
 
-<button id="soundBtn">🔊 Enable Sound</button>
+<button id="soundBtn">
+    🔊 Enable Sound
+</button>
+
+
+<!-- VIDEO LIST -->
 
 <div class="feed" id="feed">
 
-    <!-- Video 1 -->
- <div class="reel" data-video="B6btl5hsTpc">
-    <div class="reel-label">Video 01</div>
-    <div class="player"></div>
-</div>
+    <!-- VIDEO 01 -->
 
-    <!-- Video 2 -->
-    <div class="reel" data-video="VIDEO_ID_2">
-        <div class="reel-label">Video 02</div>
+    <div class="reel" data-video="B6btl5hsTpc">
+
+        <div class="reel-label">
+            Video 01
+        </div>
+
         <div class="player"></div>
+
     </div>
 
-    <!-- Video 3 -->
-    <div class="reel" data-video="VIDEO_ID_3">
-        <div class="reel-label">Video 03</div>
+
+    <!-- VIDEO 02 -->
+
+    <div class="reel" data-video="">
+
+        <div class="reel-label">
+            Video 02
+        </div>
+
         <div class="player"></div>
+
     </div>
 
+
+    <!-- VIDEO 03 -->
+
+    <div class="reel" data-video="">
+
+        <div class="reel-label">
+            Video 03
+        </div>
+
+        <div class="player"></div>
+
+    </div>
+
+
 </div>
+
+
+<!-- FOOTER -->
 
 <footer>
     © 2026 My Video Reels
 </footer>
 
+
+<!-- YOUTUBE API -->
+
 <script src="https://www.youtube.com/iframe_api"></script>
 
+
 <script>
+
+/* =================================
+   SETTINGS
+================================= */
+
 let players = [];
+
 let soundEnabled = false;
+
 let activePlayer = null;
-let apiReady = false;
+
+let visibleReels = new Set();
 
 const reels = document.querySelectorAll(".reel");
+
 const soundBtn = document.getElementById("soundBtn");
 
-function onYouTubeIframeAPIReady() {
-    apiReady = true;
-    createPlayers();
-}
 
-function createPlayers() {
+/* =================================
+   CREATE YOUTUBE PLAYERS
+================================= */
+
+function onYouTubeIframeAPIReady() {
 
     reels.forEach((reel, index) => {
 
         const videoId = reel.dataset.video;
 
-        if (!videoId || videoId.startsWith("VIDEO_ID")) return;
+        if (!videoId) return;
 
-        const player = new YT.Player(
-            document.createElement("div"),
+        players[index] = new YT.Player(
+            reel.querySelector(".player"),
             {
+
+                width: "100%",
+                height: "100%",
+
                 videoId: videoId,
 
                 playerVars: {
+
                     autoplay: 0,
                     controls: 1,
                     playsinline: 1,
                     rel: 0,
-                    enablejsapi: 1,
-                    origin: location.origin
+                    enablejsapi: 1
+
                 },
 
                 events: {
-                    onReady: function(event) {
-                        players[index] = event.target;
 
-                        reel.querySelector(".player")
-                            .appendChild(event.target.getIframe());
+                    onReady: function(event) {
+
+                        const iframe = event.target.getIframe();
+
+                        iframe.style.width = "100%";
+                        iframe.style.height = "100%";
+
+                        iframe.setAttribute(
+                            "allow",
+                            "autoplay; encrypted-media; picture-in-picture"
+                        );
+
+                        event.target.mute();
+
+                        if (visibleReels.has(index)) {
+                            playReel(index);
+                        }
+
                     },
 
                     onStateChange: function(event) {
-                        if (event.data === YT.PlayerState.PLAYING) {
-                            players.forEach((p, i) => {
-                                if (p && p !== event.target) {
-                                    p.pauseVideo();
+
+                        if (
+                            event.data ===
+                            YT.PlayerState.PLAYING
+                        ) {
+
+                            players.forEach((player, i) => {
+
+                                if (
+                                    player &&
+                                    player !== event.target
+                                ) {
+
+                                    player.pauseVideo();
+
                                 }
+
                             });
+
                         }
+
                     }
+
                 }
+
             }
+
         );
+
     });
+
 }
 
-const observer = new IntersectionObserver((entries) => {
 
-    entries.forEach(entry => {
+/* =================================
+   PLAY VIDEO
+================================= */
 
-        if (!entry.isIntersecting) return;
+function playReel(index) {
 
-        const index = [...reels].indexOf(entry.target);
-        const player = players[index];
+    const player = players[index];
 
-        if (!player || !player.playVideo) return;
+    if (!player || !player.playVideo) return;
 
-        if (activePlayer && activePlayer !== player) {
-            activePlayer.pauseVideo();
-        }
+    if (activePlayer && activePlayer !== player) {
 
-        activePlayer = player;
+        activePlayer.pauseVideo();
 
-        player.playVideo();
+    }
 
-        if (!soundEnabled) {
-            player.mute();
-        } else {
-            player.unMute();
-            player.setVolume(100);
-        }
+    activePlayer = player;
 
-    });
+    if (soundEnabled) {
 
-}, {
-    threshold: 0.65
+        player.unMute();
+
+        player.setVolume(100);
+
+    } else {
+
+        player.mute();
+
+    }
+
+    player.playVideo();
+
+}
+
+
+/* =================================
+   VIDEO VISIBILITY DETECTION
+================================= */
+
+const observer = new IntersectionObserver(
+
+    (entries) => {
+
+        entries.forEach(entry => {
+
+            const index = [...reels].indexOf(entry.target);
+
+            if (entry.isIntersecting) {
+
+                visibleReels.add(index);
+
+                playReel(index);
+
+            } else {
+
+                visibleReels.delete(index);
+
+                if (players[index]) {
+
+                    players[index].pauseVideo();
+
+                }
+
+            }
+
+        });
+
+    },
+
+    {
+
+        threshold: 0.65
+
+    }
+
+);
+
+
+/* =================================
+   OBSERVE ALL VIDEOS
+================================= */
+
+reels.forEach(reel => {
+
+    observer.observe(reel);
+
 });
 
-reels.forEach(reel => observer.observe(reel));
 
-soundBtn.addEventListener("click", () => {
+/* =================================
+   SOUND ENABLE BUTTON
+================================= */
+
+soundBtn.addEventListener("click", function() {
 
     soundEnabled = true;
 
-    soundBtn.innerText = "🔊 Sound Enabled";
+    soundBtn.innerHTML = "🔊 Sound Enabled";
 
     if (activePlayer) {
+
         activePlayer.unMute();
+
         activePlayer.setVolume(100);
+
         activePlayer.playVideo();
+
     }
 
 });
 
-document.addEventListener("visibilitychange", () => {
 
-    if (document.hidden) {
-        if (activePlayer) {
-            activePlayer.pauseVideo();
+/* =================================
+   PAUSE WHEN TAB IS HIDDEN
+================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (document.hidden) {
+
+            if (activePlayer) {
+
+                activePlayer.pauseVideo();
+
+            }
+
+        } else {
+
+            visibleReels.forEach(index => {
+
+                playReel(index);
+
+            });
+
         }
-    }
 
-});
+    }
+);
+
 </script>
 
 </body>
